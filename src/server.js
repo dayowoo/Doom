@@ -19,4 +19,10 @@ const handleListen = () => console.log("Listeneing on http://localhost:3000");
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
+//backSocket = FE의 frontSocket과 real-time 소통
+function handleConnection(backSocket) {
+    console.log(backSocket);
+}
+wss.on("connection", handleConnection);
+
 server.listen(3000, handleListen);
