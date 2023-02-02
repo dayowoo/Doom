@@ -13,10 +13,7 @@ frontSocket.addEventListener("open", ()=>{
 
 // 서버로부터 메세지 수신
 frontSocket.addEventListener("message", (message)=> {
-    // 메세지 수신하면 새로운 li 생성
-    const li = document.createElement("li");
-    li.innerText = message.data;
-    messageList.append(li);
+    
 });
 
 // 서버 연결 끊김
@@ -43,6 +40,10 @@ function handleMessageSubmit(event) {
     const input = messageForm.querySelector("input");
     // json
     frontSocket.send(makeMessage("new_message", input.value));
+    // 메세지 수신하면 새로운 li 생성
+    const li = document.createElement("li");
+    li.innerText = `You: ${input.value}`;
+    messageList.append(li);
     input.value = "";
 }
 
