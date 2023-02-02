@@ -20,19 +20,24 @@ const handleListen = () => console.log("Listeneing on http://localhost:3000");
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
-//backSocket = FE의 frontSocket과 real-time 소통
+function onSocketClose() {
+    console.log("Connected to Browser");
+};
+
+function onSocketMessage() {
+    console.log(message.toString('utf8'));
+}
+
+// backSocket = FE의 frontSocket과 real-time 소통
+// backSocket : 누가 연결했는지 알 수 있음 & 연결한거를 backSocket이란 이름으로 받음
 wss.on("connection", (backSocket) => {
     console.log("Connected to Browser");
 
     // 브라우저가 꺼졌을 때
-    backSocket.on("close", () => {
-        console.log("Disconnected frome the Browser X");
-    });
+    backSocket.on("close", onSocketClose);
 
     // 브라우저가 서버에 보낸 메세지 받기
-    backSocket.on("message", message => {
-        console.log(message.toString('utf8'));
-    })
+    backSocket.on("message", onSocketMessage);
 
     backSocket.send("hello");
 });
