@@ -1,3 +1,4 @@
+import { Socket } from "dgram";
 import express from "express";
 import http from "http";
 import WebSocket from "ws";
@@ -20,9 +21,20 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
 //backSocket = FE의 frontSocket과 real-time 소통
-function handleConnection(backSocket) {
-    console.log(backSocket);
-}
-wss.on("connection", handleConnection);
+wss.on("connection", (backSocket) => {
+    console.log("Connected to Browser");
+
+    // 브라우저가 꺼졌을 때
+    backSocket.on("close", () => {
+        console.log("Disconnected frome the Browser X");
+    });
+
+    // 브라우저가 서버에 보낸 메세지 받기
+    backSocket.on("message", message => {
+        console.log(message.toString('utf8'));
+    })
+
+    backSocket.send("hello");
+});
 
 server.listen(3000, handleListen);
