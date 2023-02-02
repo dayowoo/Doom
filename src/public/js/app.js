@@ -1,8 +1,10 @@
 // Frontend Javascript
 
 const messageList = document.querySelector("ul");
-const messageForm = document.querySelector("form");
+const messageForm = document.querySelector("#message");
+const nicknameForm = document.querySelector("#nickname");
 const frontSocket = new WebSocket(`ws://${window.location.host}`);
+
 
 // element : Server와 연결됐을 때 발생
 frontSocket.addEventListener("open", ()=>{
@@ -11,7 +13,10 @@ frontSocket.addEventListener("open", ()=>{
 
 // 서버로부터 메세지 수신
 frontSocket.addEventListener("message", (message)=> {
-    console.log("New Message: ", message.data, "from the server");
+    // 메세지 수신하면 새로운 li 생성
+    const li = document.createElement("li");
+    li.innerText = message.data;
+    messageList.append(li);
 });
 
 // 서버 연결 끊김
@@ -19,14 +24,30 @@ frontSocket.addEventListener("close", ()=> {
     console.log("Connected from Server X");
 });
 
-function handleSubmit(event) {
+
+
+function makeMessage(type, payload) {
+    const msg = {type, payload};
+    return JSON.stringify(msg);
+}
+
+
+function handleNicknameSubmit(event) {
+    event.preventDefault();
+    const input = nicknameForm.querySelector("input");
+    frontSocket.send(makeMessage("nickname", input.value));
+}
+
+function handleMessageSubmit(event) {
     event.preventDefault();
     const input = messageForm.querySelector("input");
-    frontSocket.send(input.value);
+    // json
+    frontSocket.send(makeMessage("new_message", input.value));
     input.value = "";
 }
 
-messageForm.addEventListener("submit", handleSubmit);
+messageForm.addEventListener("submit", handleNicknameSubmit);
+messageForm.addEventListener("submit", handleMessageSubmit);
 
 
 
