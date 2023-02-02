@@ -2,6 +2,7 @@ import { Socket } from "dgram";
 import express from "express";
 import http from "http";
 import { SocketAddress } from "net";
+import { parse } from "path";
 import WebSocket from "ws";
 
 const app = express();
@@ -34,15 +35,28 @@ const backSockets = [];
 wss.on("connection", (backSocket) => {
     // 브라우저가 연결되면, 배열에 넣어줌
     backSockets.push(backSocket);
+    backSocket["nickname"] = "Anon";
     console.log("Connected to Browser");
 
     // 브라우저가 꺼졌을 때
     backSocket.on("close", onSocketClose);
 
     // 브라우저가 서버에 보낸 메세지 받기
-    backSocket.on("message", (message) => {
-        backSockets.forEach((aSocket) => aSocket.send(message));
-        backSocket.send(message.toString('utf8'));
+    backSocket.on("message", (msg) => {
+        const message = JSON.parse(msg);
+
+        switch (message.type) {
+            case "new_message":
+                backSockets.forEach((aSocket) =>
+                aSocket.send(`${backSocket.nickname}: ${message.payload}`)
+                );
+                break;
+            case "nickname":
+                // socket 안에 뭔가를 저장할 수 있음
+                backSocket["nickname"] = message.payload;
+                break;
+        }
+        // backSocket.send(message.toString('utf8'));
     });
 
     backSocket.send("hello");

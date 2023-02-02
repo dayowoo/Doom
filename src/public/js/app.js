@@ -46,7 +46,7 @@ function handleMessageSubmit(event) {
     input.value = "";
 }
 
-messageForm.addEventListener("submit", handleNicknameSubmit);
+nicknameForm.addEventListener("submit", handleNicknameSubmit);
 messageForm.addEventListener("submit", handleMessageSubmit);
 
 
